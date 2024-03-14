@@ -1,0 +1,186 @@
+_format_version: "3.0"
+plugins:
+- config:
+    allowed_header_parameters: Host,Content-Type,User-Agent,Accept,Content-Length
+    api_spec: "openapi: 3.0.0\ninfo:\n  title: Student API\n  description: \"This
+      API will retrieve student information based on studentId, firstname, lastname
+      or studentType. The API supports pagination by using limit and offset query
+      param. To fetch next pages, the only param needed is nextPageId. Any other params
+      passed along with nextPageId will be ignored as nextPageId takes priority \"\n
+      \ contact:\n    email: integrationteam@sheffield.ac.uk\n  version: 0.0.1\nservers:\n
+      \ - url: https://api.dev.example.com/v1\n  - url: https://api.test.example.com/v1\ntags:\n-
+      name: GetStudents\n  description: Get Students Information\npaths:\n  /students:\n
+      \   get:\n      tags:\n        - GetStudents\n      summary: Retrieve student
+      information\n      description: Returns a list of student information.\n      operationId:
+      getStudents\n      parameters:\n        - $ref: '#/components/parameters/ContentTypeHeader'\n
+      \       - $ref: '#/components/parameters/CorrelationIdHeader'\n        - $ref:
+      '#/components/parameters/RequestIdHeader'\n        - $ref: '#/components/parameters/TimestampHeader'\n
+      \       - name: studentId\n          in: query\n          description: unique
+      student Id, if passed a single record will be fetched\n          required: false\n
+      \         schema:\n            type: string\n            minLength: 1\n            maxLength:
+      100\n          example:  1001\n        - name: firstname\n          in: query\n
+      \         description: Student firstname \n          required: false\n          schema:\n
+      \           type: string\n            minLength: 1\n            maxLength: 200\n
+      \         example:  smith\n        - name: lastname\n          in: query\n          description:
+      Student lastname \n          required: false\n          schema:\n            type:
+      string\n            minLength: 1\n            maxLength: 200\n          example:
+      \ smith\n        - name: studentType\n          in: query\n          description:
+      student registration status \n          required: false\n          schema:\n
+      \           type: string\n            minLength: 1\n            maxLength: 200\n
+      \         example:  Attending\n        - name: limit\n          in: query\n
+      \         description: limit the number of records\n          required: false\n
+      \         schema:\n            type: integer\n            maximum: 500\n          example:
+      \ 100\n        - name: offset\n          in: query\n          description: offset
+      the search result with the offset value\n          required: false\n          schema:\n
+      \           type: integer\n            maximum: 9999\n          example:  100\n
+      \       - name: nextPageId\n          in: query\n          description: this
+      param can only be passed for second page and onwards only. This param will be
+      returned in response from previous call and if this param is not populated then
+      is no next page. Alternatively, limit and offset can be used at will.\n          required:
+      false\n          schema:\n            type: string\n            minLength: 1\n
+      \           maxLength: 500\n          example:  bGltaXQ9MTAwJm9mZnNldD0yMDA\n
+      \      \n\n      responses:\n        '200':\n          description: A list of
+      student information.\n          headers:\n            x-uos-request-id:\n              $ref:
+      '#/components/headers/x-uos-request-id'\n            x-uos-correlation-id:\n
+      \             $ref: '#/components/headers/x-uos-correlation-id'\n            x-uos-timestamp:\n
+      \             $ref: '#/components/headers/x-uos-timestamp'\n          content:\n
+      \           application/json:\n              schema:\n                  type:
+      object\n                  properties:\n                    students:\n                      type:
+      array\n                      items:\n                        $ref: '#/components/schemas/Student'\n
+      \                   totalCountOfRecords:\n                      type: integer\n
+      \                     description: available number of records in the datastore.
+      This is not the number of records returned in this response. The consumer can
+      use limit and offset query param until this totalCountOfRecords is reached\n
+      \                     example: 1000\n                    nextPageId:\n                      type:
+      string\n                      description: available number of records in the
+      datastore. This is not the number of records returned in this response. The
+      consumer can use limit and offset query param until this totalCountOfRecords
+      is reached\n                      example: bGltaXQ9MTAwJm9mZnNldD0yMDA\n        '400':\n
+      \         description: Bad request\n          headers:\n            x-uos-request-id:\n
+      \             $ref: '#/components/headers/x-uos-request-id'\n            x-uos-correlation-id:\n
+      \             $ref: '#/components/headers/x-uos-correlation-id'\n            x-uos-timestamp:\n
+      \             $ref: '#/components/headers/x-uos-timestamp'\n          content:\n
+      \           application/json:\n              schema:\n                $ref:
+      '#/components/schemas/Error400'\n        '401':\n          description: Unauthorized\n
+      \         headers:\n            x-uos-request-id:\n              $ref: '#/components/headers/x-uos-request-id'\n
+      \           x-uos-correlation-id:\n              $ref: '#/components/headers/x-uos-correlation-id'\n
+      \           x-uos-timestamp:\n              $ref: '#/components/headers/x-uos-timestamp'\n
+      \         content:\n            application/json:\n              schema:\n                $ref:
+      '#/components/schemas/Error401'\n        '403':\n          description: Forbidden\n
+      \         headers:\n            x-uos-request-id:\n              $ref: '#/components/headers/x-uos-request-id'\n
+      \           x-uos-correlation-id:\n              $ref: '#/components/headers/x-uos-correlation-id'\n
+      \           x-uos-timestamp:\n              $ref: '#/components/headers/x-uos-timestamp'\n
+      \         content:\n            application/json:\n              schema:\n                $ref:
+      '#/components/schemas/Error403'\n        '500':\n          description: Internal
+      Server Error\n          headers:\n            x-uos-request-id:\n              $ref:
+      '#/components/headers/x-uos-request-id'\n            x-uos-correlation-id:\n
+      \             $ref: '#/components/headers/x-uos-correlation-id'\n            x-uos-timestamp:\n
+      \             $ref: '#/components/headers/x-uos-timestamp'\n          content:\n
+      \           application/json:\n              schema:\n                $ref:
+      '#/components/schemas/Error500'\n      security:\n        - bearerAuth: ['uos/student-read',
+      'uos/student-read-all']\n        - apiKey: []\n\ncomponents:\n  schemas:\n    Student:\n
+      \     type: object\n      properties:\n        title:\n          type: integer\n
+      \         description: The student's ID.\n          example: 123\n        forename:\n
+      \         type: string\n          description: The student's forename.\n          example:
+      \"Alice\"\n        lastname:\n          type: string\n          description:
+      The student's knownas name.\n          example: \"John\"\n        universityEmail:\n
+      \         type: string\n          format: email\n          description: The
+      student's university email.\n          example: \"alice.smith@university.edu\"\n
+      \       studentType:\n          type: string\n          description: The student's
+      domain .\n          enum:\n            - Attending\n            - Current\n
+      \         example: \"Attending\"\n    Error400:\n      type: object\n      required:\n
+      \       - code\n        - description\n        - message\n        - source\n
+      \       - type\n      properties:\n        code:\n          type: number\n          description:
+      5 digit error message code\n          example: 10000\n          enum:\n            -
+      10000\n        description:\n          type: string\n          description:
+      Description for the 5 digit  message code.\n          example: Required fields
+      are missing or invalid data specified in the request. Please refer to the API
+      documentation for more details.\n        source:\n          type: string\n          description:
+      Source of the message\n          example: Middleware\n          enum:\n            -
+      Backend\n            - Middleware\n        message:\n          type: string\n
+      \         description: Any message for the consuming system for use in UI or
+      in the application\n          example: Invalid_JSON\n        type:\n          type:
+      string\n          description: Type of the message\n          example: Validation\n
+      \         enum:\n            - System\n            - Business\n            -
+      Validation\n    Error401:\n      type: object\n      required:\n        - code\n
+      \       - description\n        - message\n        - source\n        - type\n
+      \     properties:\n        code:\n          type: number\n          description:
+      5 digit error message code\n          example: 10001\n          enum:\n            -
+      10001\n        description:\n          type: string\n          description:
+      Description for the 5 digit  message code.\n          example: Invalid Authorization
+      Token or API Key Passed\n        source:\n          type: string\n          description:
+      Source of the message\n          example: Middleware\n          enum:\n            -
+      Backend\n            - Middleware\n        message:\n          type: string\n
+      \         description: Any message for the consuming system for use in UI or
+      in the application\n          example: Unauthorized\n        type:\n          type:
+      string\n          description: Type of the message\n          example: Validation\n
+      \         enum:\n            - System\n            - Business\n            -
+      Validation\n    Error403:\n      type: object\n      required:\n        - code\n
+      \       - description\n        - message\n        - source\n        - type\n
+      \     properties:\n        code:\n          type: number\n          description:
+      5 digit error message code\n          example: 10002\n          enum:\n            -
+      10000\n        description:\n          type: string\n          description:
+      Description for the 5 digit  message code.\n          example: Invalid Token
+      or API key\n        source:\n          type: string\n          description:
+      Source of the message\n          example: Middleware\n          enum:\n            -
+      Backend\n            - Middleware\n        message:\n          type: string\n
+      \         description: Any message for the consuming system for use in UI or
+      in the application\n          example: Forbidden \n        type:\n          type:
+      string\n          description: Type of the message\n          example: Validation\n
+      \         enum:\n            - System\n            - Business\n            -
+      Validation\n    Error500:\n      type: object\n      required:\n        - code\n
+      \       - description\n        - message\n        - source\n        - type\n
+      \     properties:\n        code:\n          type: number\n          description:
+      5 digit  message code\n          example: 20000\n          enum:\n            -
+      20000\n        description:\n          type: string\n          description:
+      Description for the 5 digit  message code.\n          example: Internal Server
+      Error\n        source:\n          type: string\n          description: Source
+      of the message\n          example: Backend\n          enum:\n            - Backend\n
+      \           - Middleware\n        message:\n          type: string\n          description:
+      Any message for the consuming system for use in UI or in the application\n        type:\n
+      \         type: string\n          description: Type of the message\n          example:
+      System\n          enum:\n            - System\n            - Business\n            -
+      Validation\n  headers:\n    x-uos-timestamp:\n        description: Timestamp
+      for when the API response was made.\n        required: true\n        schema:\n
+      \        type: string\n         format: date-time\n        example: 2023-10-26T15:22:10Z\n
+      \   x-uos-correlation-id:\n        description: A unique identifier used by
+      consumers or within the microservices layer in a business process journey.\n
+      \       required: false\n        schema:\n          type: string\n          minLength:
+      1            \n          maxLength: 100\n\n    x-uos-request-id:\n      description:
+      A unique identifier for the API request. \n      required: true\n      schema:\n
+      \       type: string\n        minLength: 1            \n        maxLength: 100
+      \      \n  parameters:\n    ContentTypeHeader:\n      name: Content-Type\n      in:
+      header\n      required: true\n      schema:\n        type: string\n        default:
+      application/json\n        enum:\n          - application/json\n          - application/xml\n
+      \   CorrelationIdHeader:\n      name: x-uos-correlation-id\n      in: header\n
+      \     required: false\n      schema:\n        type: string\n        minLength:
+      1            \n        maxLength: 300\n        description: A unique identifier
+      used by consumers or within the microservices layer in a business process journey.\n
+      \       example: e29b-41d4-a716-44665544000\n    RequestIdHeader:\n      name:
+      x-uos-request-id\n      in: header\n      required: true\n      schema:\n        type:
+      string\n        minLength: 5            \n        maxLength: 300\n        description:
+      A unique identifier for the API request.\n        example: 550e8400-e29b-41d4-a716-446655440000\n
+      \   TimestampHeader:\n      name: x-uos-timestamp\n      in: header\n      required:
+      true\n      schema:\n        type: string\n        description: Timestamp for
+      when the API request was made.\n        format: date-time\n        example:
+      2023-10-26T15:22:10Z\n        \n  securitySchemes:\n    bearerAuth:\n      type:
+      oauth2\n      flows:\n        clientCredentials:\n          tokenUrl: https://example.com/oauth2/token\n
+      \         scopes:\n            uos/student-read: Read student information\n
+      \           uos/student-read-all: Read all student information\n    apiKey:\n
+      \     type: apiKey\n      in: header\n      name: x-api-key\n"
+    header_parameter_check: false
+    include_base_path: false
+    notify_only_request_validation_failure: false
+    notify_only_response_body_validation_failure: false
+    query_parameter_check: false
+    validate_request_body: true
+    validate_request_header_params: true
+    validate_request_query_params: true
+    validate_request_uri_params: true
+    validate_response_body: false
+    verbose_response: true
+  enabled: true
+  name: oas-validation
+  protocols:
+  - http
+  - https
