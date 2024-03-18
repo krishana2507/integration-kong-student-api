@@ -14,7 +14,7 @@ services:
           hide_client_headers: false
           hour: null
           limit_by: consumer
-          minute: 10
+          minute: null
           month: null
           path: null
           policy: local
@@ -27,7 +27,7 @@ services:
           redis_ssl_verify: false
           redis_timeout: 2000
           redis_username: null
-          second: null
+          second: 10
           year: null
         enabled: true
         name: rate-limiting
@@ -37,9 +37,9 @@ services:
           - http
           - https
       - config:
-          allowed_payload_size: 128
+          allowed_payload_size: 10
           require_content_length: false
-          size_unit: megabytes
+          size_unit: kilobytes
         enabled: true
         name: request-size-limiting
         protocols:
