@@ -37,7 +37,7 @@ services:
           - http
           - https
       - config:
-          allowed_payload_size: 20
+          allowed_payload_size: 10
           require_content_length: false
           size_unit: kilobytes
         enabled: true
